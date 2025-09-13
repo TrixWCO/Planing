@@ -1,0 +1,125 @@
+<!-- planning_web.html
+     Sauvegarde dans : C:\Users\AK47\Documents\code\planning_web.html
+     Ce fichier contient HTML + CSS + JS + Python intégré (dans le bouton de téléchargement).
+     Il fonctionne sans serveur.
+-->
+
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Planning - A/B</title>
+  <style>
+    :root{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
+    body{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f4f6f8;margin:0}
+    .card{width:720px;max-width:95%;background:white;border-radius:12px;box-shadow:0 8px 24px rgba(18,38,63,0.08);padding:22px}
+    h1{margin:0 0 10px;font-size:20px}
+    .controls{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+    select,input[type=button]{padding:8px 10px;border-radius:8px;border:1px solid #d9e0e6;background:#fff}
+    button.primary{background:#0b78ff;color:white;border:none;padding:9px 12px;border-radius:8px;cursor:pointer}
+    pre{background:#0f1724;color:#e6eef8;padding:14px;border-radius:8px;white-space:pre-wrap}
+    .foot{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:14px}
+    a.small{font-size:13px;color:#4b5563;text-decoration:none}
+    .download{background:#10b981;color:white;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
+    @media (max-width:480px){.controls{flex-direction:column;align-items:stretch}}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Planning (Semaine A / B)</h1>
+    <div class="controls">
+      <label>
+        Semaine
+        <select id="weekSelect">
+          <option value="a">A</option>
+          <option value="b">B</option>
+        </select>
+      </label>
+
+      <label>
+        Jour
+        <select id="daySelect">
+          <option value="dimanche">Dimanche</option>
+          <option value="lundi">Lundi</option>
+          <option value="mardi">Mardi</option>
+          <option value="mercredi">Mercredi</option>
+          <option value="jeudi">Jeudi</option>
+        </select>
+      </label>
+
+      <button class="primary" id="showBtn">Afficher</button>
+
+      <button class="download" id="downloadPy">Télécharger Planing.py</button>
+    </div>
+
+    <pre id="output">Choisis une semaine et un jour puis clique "Afficher".</pre>
+
+    <div class="foot">
+      <a class="small" href="#" id="copyBtn">Copier dans le presse-papiers</a>
+      <span class="small">Sauvegarde : C:\\Users\\AK47\\Documents\\code</span>
+    </div>
+  </div>
+
+  <script>
+    // mêmes données que dans le script Python fourni
+    const schedules = {
+      a: {
+        dimanche: `Retirer : SES, Espagnol\nRajouter : SVT, Religion, Anglais, Histoire-Geo\nVous avez Aujourd'hui : SVT, Maths, Religion, Anglais, Histoire-Geo, Arabe et Francais`,
+        lundi: `Retirer : Maths, Religion, Histoire-Geo, SVT\nRajouter : Espagnol, Physique-Chimie\nVous avez Aujourd'hui : Espagnol, Anglais, Arabe, Sport, Physique-Chimie, Francais`,
+        mardi: `Retirer : Physique-Chimie\nRajouter : Religion, Histoire-Geo\nVous avez Aujourd'hui : Espagnol, Arabe, Religion, Histoire-Geo, Francais, Anglais`,
+        mercredi: `Retirer : Espagnol, Anglais, Religion\nRajouter : Physique-Chimie, SNT, SVT, Maths\nVous avez Aujourd'hui : SNT, Physique-Chimie, Histoire-Geo, Francais, Maths, SVT`,
+        jeudi: `Retirer : Physique-Chimie, Histoire-Geo, SVT\nRajouter : SES\nVous avez aujourd'hui : Maths, SNT, Arabe, Francais, SES`,
+      },
+      b: {
+        dimanche: `Retirer : SNT\nRajouter : SVT, Religion, Anglais, Histoire-Geo, SES\nVous avez Aujourd'hui : SES, Maths, Religion, Anglais, Histoire-Geo, Arabe et Francais`,
+        lundi: `Retirer : Maths, Religion, Histoire-Geo, SVT\nRajouter : Espagnol, Physique-Chimie\nVous avez Aujourd'hui : Espagnol, Anglais, Arabe, Sport, Physique-Chimie, Francais`,
+        mardi: `Retirer : Physique-Chimie\nRajouter : Religion, Histoire-Geo, EMC\nVous avez Aujourd'hui : EMC, Espagnol, Arabe, Religion, Histoire-Geo, Francais, Anglais`,
+        mercredi: `Retirer : Espagnol, Anglais, Religion, EMC\nRajouter : Physique-Chimie, SNT, SVT, Maths\nVous avez Aujourd'hui : SNT, Physique-Chimie, Histoire-Geo, Francais, Maths, SVT`,
+        jeudi: `Retirer : Physique-Chimie, Histoire-Geo, SVT\nRajouter : SES\nVous avez aujourd'hui : Maths, Espagnol, Arabe, Francais, SES`,
+      }
+    };
+
+    const weekSelect = document.getElementById('weekSelect');
+    const daySelect = document.getElementById('daySelect');
+    const output = document.getElementById('output');
+    const showBtn = document.getElementById('showBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const downloadPy = document.getElementById('downloadPy');
+
+    showBtn.addEventListener('click', () => {
+      const w = weekSelect.value;
+      const d = daySelect.value;
+      const text = (schedules[w] && schedules[w][d]) ? schedules[w][d] : 'Erreur, veuillez réessayer';
+      output.textContent = text;
+    });
+
+    copyBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try{
+        await navigator.clipboard.writeText(output.textContent);
+        copyBtn.textContent = 'Copié !';
+        setTimeout(()=> copyBtn.textContent = 'Copier dans le presse-papiers', 1400);
+      }catch(err){
+        copyBtn.textContent = 'Impossible de copier';
+        setTimeout(()=> copyBtn.textContent = 'Copier dans le presse-papiers', 1400);
+      }
+    });
+
+    // Code Python intégré pour le bouton "Télécharger"
+    const pyContent = `# Planing.py - version complète\n# Sauvegarde: C:\\\\Users\\\\AK47\\\\Documents\\\\code\\\\Planing.py\n\n# planning.py\n# Script amélioré pour afficher l'emploi du temps selon la semaine (A/B) et le jour.\n\n"""Emploi du temps Semaine A et B"""\n\nschedules = {\n    'a': {\n        'dimanche': """Retirer : SES, Espagnol\nRajouter : SVT, Religion, Anglais, Histoire-Geo\nVous avez Aujourd'hui : SVT, Maths, Religion, Anglais, Histoire-Geo, Arabe et Francais""",\n        'lundi': """Retirer : Maths, Religion, Histoire-Geo, SVT\nRajouter : Espagnol, Physique-Chimie\nVous avez Aujourd'hui : Espagnol, Anglais, Arabe, Sport, Physique-Chimie, Francais""",\n        'mardi': """Retirer : Physique-Chimie\nRajouter : Religion, Histoire-Geo\nVous avez Aujourd'hui : Espagnol, Arabe, Religion, Histoire-Geo, Francais, Anglais""",\n        'mercredi': """Retirer : Espagnol, Anglais, Religion\nRajouter : Physique-Chimie, SNT, SVT, Maths\nVous avez Aujourd'hui : SNT, Physique-Chimie, Histoire-Geo, Francais, Maths, SVT""",\n        'jeudi': """Retirer : Physique-Chimie, Histoire-Geo, SVT\nRajouter : SES\nVous avez aujourd'hui : Maths, SNT, Arabe, Francais, SES""",\n    },\n    'b': {\n        'dimanche': """Retirer : SNT\nRajouter : SVT, Religion, Anglais, Histoire-Geo, SES\nVous avez Aujourd'hui : SES, Maths, Religion, Anglais, Histoire-Geo, Arabe et Francais""",\n        'lundi': """Retirer : Maths, Religion, Histoire-Geo, SVT\nRajouter : Espagnol, Physique-Chimie\nVous avez Aujourd'hui : Espagnol, Anglais, Arabe, Sport, Physique-Chimie, Francais""",\n        'mardi': """Retirer : Physique-Chimie\nRajouter : Religion, Histoire-Geo, EMC\nVous avez Aujourd'hui : EMC, Espagnol, Arabe, Religion, Histoire-Geo, Francais, Anglais""",\n        'mercredi': """Retirer : Espagnol, Anglais, Religion, EMC\nRajouter : Physique-Chimie, SNT, SVT, Maths\nVous avez Aujourd'hui : SNT, Physique-Chimie, Histoire-Geo, Francais, Maths, SVT""",\n        'jeudi': """Retirer : Physique-Chimie, Histoire-Geo, SVT\nRajouter : SES\nVous avez aujourd'hui : Maths, Espagnol, Arabe, Francais, SES""",\n    }\n}\n\nvalid_days = ["dimanche", "lundi", "mardi", "mercredi", "jeudi"]\n\ndef ask_and_print():\n    while True:\n        semaine = input("Choisissez votre semaine (A ou B) : ").strip().lower()\n        jour = input("Choisissez votre jour (ex: Dimanche) : ").strip().lower()\n\n        if semaine not in schedules:\n            print("Semaine invalide. Tape A ou B. Réessaye.\\n")\n            continue\n\n        if jour not in schedules[semaine]:\n            print(f"Jour invalide. Choisis un des jours : {', '.join(valid_days)}.\\n")\n            continue\n\n        print("\\n" + schedules[semaine][jour] + "\\n")\n        break\n\nif __name__ == "__main__":\n    ask_and_print()\n`;
+
+    downloadPy.addEventListener('click', () => {
+      const blob = new Blob([pyContent], {type: 'text/x-python'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Planing.py';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>
